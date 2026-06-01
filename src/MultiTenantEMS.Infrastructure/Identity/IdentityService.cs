@@ -20,7 +20,8 @@ namespace MultiTenantEMS.Infrastructure.Identity
                 Email = email,
                 UserName = email,
                 TenantId = tenantId,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Role = role
             };
 
             var result = await _userManager.CreateAsync(user, password);

@@ -2,13 +2,13 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MultiTenantEMS.Domain.Entity;
 
-namespace MultiTenantEMS.Infrastructure.Configurations
+namespace MultiTenantEMS.Infrastructure.Persistence.MasterDb.Configurations
 {
     internal class TenantConfiguration : IEntityTypeConfiguration<Tenant>
     {
         public void Configure(EntityTypeBuilder<Tenant> builder)
         {
-            builder.HasKey(t=>t.Id);
+            builder.HasKey(t => t.Id);
             builder
                 .Property(t => t.Name)
                 .IsRequired();

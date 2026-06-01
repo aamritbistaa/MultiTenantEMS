@@ -34,14 +34,13 @@ namespace MultiTenantEMS.Infrastructure.Identity
                 {
                     Email = email,
                     UserName = email,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    Role = Roles.SuperAdmin.ToString()
                 };
 
                 await userManager.CreateAsync(user, "Tester@123");
 
-                await userManager.AddToRoleAsync(
-                    user,
-                    Roles.SuperAdmin);
+                await userManager.AddToRoleAsync(user, Roles.SuperAdmin);
             }
         }
     }

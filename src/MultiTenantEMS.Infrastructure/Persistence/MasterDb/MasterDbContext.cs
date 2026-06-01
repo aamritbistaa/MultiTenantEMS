@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using MultiTenantEMS.Application.Abstractions.Persistence;
 using MultiTenantEMS.Domain.Entity;
-using MultiTenantEMS.Infrastructure.Configurations;
 using MultiTenantEMS.Infrastructure.Identity;
+using MultiTenantEMS.Infrastructure.Persistence.MasterDb.Configurations;
 
 namespace MultiTenantEMS.Infrastructure.Persistence.MasterDb
 {

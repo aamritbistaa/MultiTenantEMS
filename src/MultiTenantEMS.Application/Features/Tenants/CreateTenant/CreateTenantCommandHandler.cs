@@ -69,7 +69,7 @@ namespace MultiTenantEMS.Application.Features.Tenants.CreateTenant
 
                 await _unitOfWork.SaveChangesAsync();
                 _logger.LogInformation("Tenant {TenantId} created successfully with admin user {EmailAddress}.", tenantId, request.EmailAddress);
-                return Result<string>.Success($"Tenant {tenantId} created successfully.");
+                return Result<string>.Success($"Tenant {tenantId} created successfully.", ApiResponseCode.Created);
             }
             catch (Exception ex)
             {

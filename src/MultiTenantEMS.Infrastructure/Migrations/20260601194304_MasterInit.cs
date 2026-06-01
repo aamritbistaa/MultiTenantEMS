@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MultiTenantEMS.Infrastructure.Persistence.MasterDb.Migrations
+namespace MultiTenantEMS.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class MasterInit : Migration
@@ -32,6 +32,7 @@ namespace MultiTenantEMS.Infrastructure.Persistence.MasterDb.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     TenantId = table.Column<string>(type: "character varying(4)", maxLength: 4, nullable: true),
+                    Role = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),

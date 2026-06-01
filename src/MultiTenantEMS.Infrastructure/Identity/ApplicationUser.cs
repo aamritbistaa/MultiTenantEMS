@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MultiTenantEMS.Domain.Entity;
 
 namespace MultiTenantEMS.Infrastructure.Identity
 {
@@ -6,5 +7,6 @@ namespace MultiTenantEMS.Infrastructure.Identity
     {
         // null = SuperAdmin
         public string? TenantId { get; set; }
+        public string Role { get; set; }
     }
 }

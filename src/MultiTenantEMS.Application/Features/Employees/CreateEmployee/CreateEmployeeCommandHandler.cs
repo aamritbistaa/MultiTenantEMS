@@ -45,7 +45,7 @@ namespace MultiTenantEMS.Application.Features.Employees.CreateEmployee
                     return Result<string>.Failure(string.Join(", ", identityResult.Errors));
                 }
                 _logger.LogInformation("Employee created successfully with email: {Email}", employee.EmailAddress);
-                return Result<string>.Success($"Employee: {employeeId} added successfully.");
+                return Result<string>.Success($"Employee: {employeeId} added successfully.", ApiResponseCode.Created);
             }
             catch (Exception ex)
             {
