@@ -21,7 +21,11 @@ namespace MultiTenantEMS.API.Controllers.Employees
             _logger = logger;
             _sender = sender;
         }
-
+        /// <summary>
+        /// Get all employees with pagination
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize(Policy = "Admin")]
         public async Task<Result<GetEmployeeQueryResponseDto>> GetEmployee([FromQuery] GetEmployeeQuery request)
@@ -29,7 +33,12 @@ namespace MultiTenantEMS.API.Controllers.Employees
             _logger.LogInformation("Get all employees initiated");
             return await _sender.Send(request);
         }
-        
+
+        /// <summary>
+        /// Get employee by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:Guid}")]
         [Authorize(Policy = "AdminOrEmployee")]
         public async Task<Result<GetEmployeeByIdResponseDto>> GetEmployeeById(Guid id)
@@ -38,6 +47,11 @@ namespace MultiTenantEMS.API.Controllers.Employees
             return await _sender.Send(new GetEmployeeByIdQuery { Id = id });
         }
 
+        /// <summary>
+        /// Create a new employee
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public async Task<Result<string>> CreateEmployee(CreateEmployeeCommand request)
@@ -47,19 +61,30 @@ namespace MultiTenantEMS.API.Controllers.Employees
             return result;
         }
 
+        /// <summary>
+        /// Update an existing employee
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPut("{id:Guid}")]
         [Authorize(Policy = "Admin")]
-        public async Task<Result> UpdateEmployee([FromRoute] Guid id, [FromBody] string fullName)
+        public async Task<Result> UpdateEmployee([FromRoute] Guid id, [FromBody] UpdateEmployeeCommandRequestDto request)
         {
-            _logger.LogInformation("Update employee initiated with name: {Name}", fullName);
+            _logger.LogInformation("Update employee initiated with name: {Name}", request.FullName);
             var result = await _sender.Send(new UpdateEmployeeCommand()
             {
                 Id = id,
-                FullName = fullName
+                FullName = request.FullName
             });
             return result;
         }
 
+        /// <summary>
+        /// Delete employee by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id:Guid}")]
         [Authorize(Policy = "Admin")]
         public async Task<Result> DeleteEmployee([FromRoute] Guid id)

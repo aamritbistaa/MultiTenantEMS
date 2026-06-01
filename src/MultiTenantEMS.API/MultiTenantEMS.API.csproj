@@ -25,5 +25,10 @@
     <ProjectReference Include="..\MultiTenantEMS.Application\MultiTenantEMS.Application.csproj" />
     <ProjectReference Include="..\MultiTenantEMS.Infrastructure\MultiTenantEMS.Infrastructure.csproj" />
   </ItemGroup>
+	
+    <PropertyGroup>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	    <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
 
 </Project>

@@ -21,15 +21,24 @@ namespace MultiTenantEMS.API.Controllers.Tenants
             _sender = sender;
             _logger = logger;
         }
-
+        /// <summary>
+        /// Get tenant by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:Guid}")]
         [Authorize(Policy = "SuperAdmin")]
-        public async Task<Result<GetTenantByIdResponse>> GetTenantByTenantId(Guid id)
+        public async Task<Result<GetTenantByIdResponse>> GetTenantById(Guid id)
         {
             _logger.LogInformation("Get tenant {Id} initiated", id);
             return await _sender.Send(new GetTenantByIdQuery() { Id = id });
         }
 
+        /// <summary>
+        /// Get all tenants with pagination
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize(Policy = "SuperAdmin")]
         public async Task<Result<GetTenantResponse>> GetTenant([FromQuery] GetTenantsQuery request)
@@ -38,6 +47,11 @@ namespace MultiTenantEMS.API.Controllers.Tenants
             return await _sender.Send(request);
         }
 
+        /// <summary>
+        /// Create a new tenant
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "SuperAdmin")]
         public async Task<Result<string>> CreateTenant(CreateTenantCommand request)
@@ -47,6 +61,12 @@ namespace MultiTenantEMS.API.Controllers.Tenants
             return result;
         }
 
+        /// <summary>
+        /// Update an existing tenant
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPut("{id:Guid}")]
         [Authorize(Policy = "SuperAdmin")]
         public async Task<Result> UpdateTenant([FromRoute]Guid id, [FromBody] UpdateTenantCommandRequestDto request)
@@ -62,6 +82,11 @@ namespace MultiTenantEMS.API.Controllers.Tenants
             return await _sender.Send(command);
         }
 
+        /// <summary>
+        /// Deletes a tenant using the tenant identifier (4-character string).
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
         [HttpDelete("{tenantId}")]
         [Authorize(Policy = "SuperAdmin")]
         public async Task<Result> DeleteTenant(string tenantId)

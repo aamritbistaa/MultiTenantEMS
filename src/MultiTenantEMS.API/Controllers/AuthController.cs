@@ -21,7 +21,11 @@ namespace MultiTenantEMS.API.Controllers
             _currentUserService = currentUserService;
             _logger = logger;
         }
-
+        /// <summary>
+        /// Login user and generate JWT token
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<Result<LoginResponse>> Login(LoginCommand command)
         {
@@ -30,6 +34,11 @@ namespace MultiTenantEMS.API.Controllers
             return result;
         }
 
+        /// <summary>
+        /// Updates the password for the authenticated user.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPut("password")]
         public async Task<Result> UpdatePassword(UpdatePasswordCommand command)
