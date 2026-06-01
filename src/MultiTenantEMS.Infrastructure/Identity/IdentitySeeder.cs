@@ -5,9 +5,7 @@ namespace MultiTenantEMS.Infrastructure.Identity
 {
     public static class IdentitySeeder
     {
-        public static async Task SeedAsync(
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             string[] roles =
             {

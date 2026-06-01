@@ -22,45 +22,33 @@ namespace MultiTenantEMS.API.Controllers.Tenants
             _logger = logger;
         }
 
-        [HttpGet]
-        [Authorize(Roles = "SuperAdmin")]
-        public async Task<Result<GetTenantResponse>> GetTenant([FromQuery] GetTenantsQuery request)
-        {
-            _logger.LogInformation("Get all tenants initiated");
-            return await _sender.Send(request);
-        }
-        /// <summary>
-        /// Get tenant by Id
-        /// </summary>
-        /// <returns></returns>
         [HttpGet("{id:Guid}")]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize(Policy = "SuperAdmin")]
         public async Task<Result<GetTenantByIdResponse>> GetTenantByTenantId(Guid id)
         {
             _logger.LogInformation("Get tenant {Id} initiated", id);
             return await _sender.Send(new GetTenantByIdQuery() { Id = id });
         }
-        /// <summary>
-        /// Create Tenant
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
+
+        [HttpGet]
+        [Authorize(Policy = "SuperAdmin")]
+        public async Task<Result<GetTenantResponse>> GetTenant([FromQuery] GetTenantsQuery request)
+        {
+            _logger.LogInformation("Get all tenants initiated");
+            return await _sender.Send(request);
+        }
+
         [HttpPost]
-        [Authorize(Roles = Roles.SuperAdmin)]
+        [Authorize(Policy = "SuperAdmin")]
         public async Task<Result<string>> CreateTenant(CreateTenantCommand request)
         {
             _logger.LogInformation("Create tenant initiated with name: {Name}, email: {Email}, tenantId: {TenantId}", request.Name, request.EmailAddress, request.TenantId);
             var result = await _sender.Send(request);
             return result;
         }
-        /// <summary>
-        /// Update Tenant By Id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="request"></param>
-        /// <returns></returns>
+
         [HttpPut("{id:Guid}")]
-        [Authorize(Roles = Roles.SuperAdmin)]
+        [Authorize(Policy = "SuperAdmin")]
         public async Task<Result> UpdateTenant([FromRoute]Guid id, [FromBody] UpdateTenantCommandRequestDto request)
         {
             _logger.LogInformation("Update tenant initiated id: {Id}", id);
@@ -73,13 +61,9 @@ namespace MultiTenantEMS.API.Controllers.Tenants
             };
             return await _sender.Send(command);
         }
-        /// <summary>
-        /// Delete tenant by tenantId
-        /// </summary>
-        /// <param name="tenantId"></param>
-        /// <returns></returns>
+
         [HttpDelete("{tenantId}")]
-        [Authorize(Roles = Roles.SuperAdmin)]
+        [Authorize(Policy = "SuperAdmin")]
         public async Task<Result> DeleteTenant(string tenantId)
         {
             _logger.LogInformation("Delete tenant initiated tenantId: {TenantId}", tenantId);

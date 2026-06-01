@@ -1,53 +1,49 @@
-﻿using MultiTenantEMS.Application.Abstractions.Messaging;
+﻿using Microsoft.Extensions.Logging;
+using MultiTenantEMS.Application.Abstractions.Messaging;
 using MultiTenantEMS.Application.Abstractions.Persistence;
-using MultiTenantEMS.Application.Abstractions.Services;
 using MultiTenantEMS.Application.Common;
 using MultiTenantEMS.Application.Features.Employees.GetEmployeeById;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MultiTenantEMS.Application.Features.Employees.GetEmployees
 {
     internal class GetEmployeeQueryHandler : IQueryHandler<GetEmployeeQuery, GetEmployeeQueryResponseDto>
     {
 
-        private readonly ICurrentUserService _currentUserService;
         private readonly IEmployeeRepository _employeeRepository;
-        public GetEmployeeQueryHandler(ICurrentUserService currentUserService, IEmployeeRepository employeeRepository)
+        private readonly ILogger<GetEmployeeQueryHandler> _logger;
+        public GetEmployeeQueryHandler(IEmployeeRepository employeeRepository, ILogger<GetEmployeeQueryHandler> logger)
         {
-            _currentUserService = currentUserService;
             _employeeRepository = employeeRepository;
+            _logger = logger;
         }
 
         public async Task<Result<GetEmployeeQueryResponseDto>> Handle(GetEmployeeQuery request, CancellationToken cancellationToken)
         {
-            var tenant = await _currentUserService.GetCurrentTenant();
-
-            var employeeTask = _employeeRepository.GetEmployees(tenant.ConnectionString, request.Skip, request.Take);
-            var countTask = _employeeRepository.CountEmployees(tenant.ConnectionString);
-
-            await Task.WhenAll(employeeTask, countTask);
-
-            var allEmployees = await employeeTask;
-            var count = await countTask;
-
-            var response = new GetEmployeeQueryResponseDto
+            try
             {
-                Skip = request.Skip,
-                Take = request.Take,
-                Count = count,
-                Data = allEmployees.Select(e => new GetEmployeeByIdResponseDto
+                var allEmployees = await _employeeRepository.GetEmployees(request.Skip, request.Take);
+                var count = await _employeeRepository.CountEmployees();
+                
+                var response = new GetEmployeeQueryResponseDto
                 {
-                    Id = e.Id,
-                    FullName = e.FullName,
-                    EmailAddress = e.EmailAddress,
-                }).ToList()
-            };
-
-            return Result<GetEmployeeQueryResponseDto>.Success(response);
+                    Skip = request.Skip,
+                    Take = request.Take,
+                    Count = count,
+                    Data = allEmployees.Select(e => new GetEmployeeByIdResponseDto
+                    {
+                        Id = e.Id,
+                        FullName = e.FullName,
+                        EmailAddress = e.EmailAddress,
+                    }).ToList()
+                };
+                _logger.LogInformation("Successfully retrieved employees. Skip: {Skip}, Take: {Take}, Count: {Count}", request.Skip, request.Take, count);
+                return Result<GetEmployeeQueryResponseDto>.Success(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "An error occurred while retrieving employees. Skip: {Skip}, Take: {Take}", request.Skip, request.Take);
+                return Result<GetEmployeeQueryResponseDto>.Failure("An error occurred while retrieving employees. Please try again later.", ApiResponseCode.InternalServerError);
+            }
         }
     }
 }

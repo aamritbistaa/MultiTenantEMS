@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MultiTenantEMS.Application.Abstractions.Persistence;
 
 namespace MultiTenantEMS.Application
 {

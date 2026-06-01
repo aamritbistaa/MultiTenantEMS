@@ -1,4 +1,5 @@
-﻿using MultiTenantEMS.Application.Abstractions.Authentication;
+﻿using Microsoft.Extensions.Logging;
+using MultiTenantEMS.Application.Abstractions.Authentication;
 using MultiTenantEMS.Application.Abstractions.Messaging;
 using MultiTenantEMS.Application.Abstractions.Persistence;
 using MultiTenantEMS.Application.Abstractions.Services;
@@ -13,12 +14,14 @@ namespace MultiTenantEMS.Application.Features.Employees.CreateEmployee
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IIdentityService _identityService;
         private readonly IUnitOfWork _unitOfWork;
-        public CreateEmployeeCommandHandler(ICurrentUserService currentUserService, IEmployeeRepository employeeRepository, IIdentityService identityService, IUnitOfWork unitOfWork)
+        private readonly ILogger<CreateEmployeeCommandHandler> _logger;
+        public CreateEmployeeCommandHandler(ICurrentUserService currentUserService, IEmployeeRepository employeeRepository, IIdentityService identityService, IUnitOfWork unitOfWork, ILogger<CreateEmployeeCommandHandler> logger)
         {
             _currentUserService = currentUserService;
             _employeeRepository = employeeRepository;
             _identityService = identityService;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
         public async Task<Result<string>> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
         {
@@ -30,24 +33,25 @@ namespace MultiTenantEMS.Application.Features.Employees.CreateEmployee
                 EmailAddress = request.EmailAddress
             };
 
-            var employeeId = await _employeeRepository.AddEmployee(tenant.ConnectionString, employee);
+            var employeeId = await _employeeRepository.AddEmployee(employee);
             try
             {
                 var identityResult = await _identityService.CreateUserAsync(employee.EmailAddress, request.Password, Roles.Employee, tenant.TenantId);
                 await _unitOfWork.SaveChangesAsync();
                 if (!identityResult.Succeeded)
                 {
-                    await _employeeRepository.DeleteEmployee(tenant.ConnectionString, employee);
+                    await _employeeRepository.DeleteEmployee(employee);
 
                     return Result<string>.Failure(string.Join(", ", identityResult.Errors));
                 }
-
+                _logger.LogInformation("Employee created successfully with email: {Email}", employee.EmailAddress);
                 return Result<string>.Success($"Employee: {employeeId} added successfully.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                await _employeeRepository.DeleteEmployee(tenant.ConnectionString, employee);
-                throw;
+                _logger.LogCritical(ex, "An error occurred while creating employee with email: {Email}", employee.EmailAddress);
+                await _employeeRepository.DeleteEmployee(employee);
+                return Result<string>.Failure("An error occurred while creating the employee.", ApiResponseCode.InternalServerError);
             }
         }
     }

@@ -36,5 +36,16 @@ namespace MultiTenantEMS.Infrastructure.Identity
             }
             return Guid.Parse(userId);
         }
+        public async Task<string> GetConnectionString()
+        {
+            var tenantId = httpContextAccessor.HttpContext?.User?.FindFirstValue("tenantId");
+
+            if (tenantId is null)
+            {
+                throw new Exception("Tenant ID claim is missing in the current user context.");
+            }
+            var tenant = await masterDbContext.Tenants.AsNoTracking().FirstOrDefaultAsync(x => x.TenantId == tenantId);
+            return tenant?.DbConnStr ?? string.Empty;
+        }
     }
 }

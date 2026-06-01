@@ -1,33 +1,39 @@
-﻿using MultiTenantEMS.Application.Abstractions.Messaging;
+﻿using Microsoft.Extensions.Logging;
+using MultiTenantEMS.Application.Abstractions.Messaging;
 using MultiTenantEMS.Application.Abstractions.Persistence;
-using MultiTenantEMS.Application.Abstractions.Services;
 using MultiTenantEMS.Application.Common;
 
 namespace MultiTenantEMS.Application.Features.Employees.DeleteEmployee
 {
     internal class DeleteEmployeeCommandHandler : ICommandHandler<DeleteEmployeeCommand>
     {
-        private readonly ICurrentUserService _currentUserService;
         private readonly IEmployeeRepository _employeeRepository;
-
-        public DeleteEmployeeCommandHandler(IEmployeeRepository employeeRepository, ICurrentUserService currentUserService)
+        private readonly ILogger<DeleteEmployeeCommandHandler> _logger;
+        public DeleteEmployeeCommandHandler(IEmployeeRepository employeeRepository, ILogger<DeleteEmployeeCommandHandler> logger)
         {
             _employeeRepository = employeeRepository;
-            _currentUserService = currentUserService;
+            _logger = logger;
         }
 
         public async Task<Result> Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
         {
-            var tenant = await _currentUserService.GetCurrentTenant();
-
-            var employee = await _employeeRepository.GetEmployeeById(tenant.ConnectionString, request.Id);
-            if(employee == null)
+            try
             {
-                return Result.Failure("Employee not found.");
+                var employee = await _employeeRepository.GetEmployeeById(request.Id);
+                if (employee == null)
+                {
+                    return Result.Failure("Employee not found.");
+                }
+                employee.IsDeleted = true;
+                await _employeeRepository.UpdateEmployee(employee);
+                _logger.LogInformation("Employee with ID {EmployeeId} deleted.", request.Id);
+                return Result.Success();
             }
-            employee.IsDeleted = true;
-            await _employeeRepository.UpdateEmployee(tenant.ConnectionString, employee);
-            return Result.Success();
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "An error occurred while deleting employee with ID {EmployeeId}.", request.Id);
+                return Result.Failure("An error occurred while deleting the employee.", ApiResponseCode.InternalServerError);
+            }
         }
     }
 }

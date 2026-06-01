@@ -1,33 +1,37 @@
-﻿using MediatR;
+﻿using Microsoft.Extensions.Logging;
 using MultiTenantEMS.Application.Abstractions.Authentication;
 using MultiTenantEMS.Application.Abstractions.Messaging;
 using MultiTenantEMS.Application.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MultiTenantEMS.Application.Features.Authentication.ChangePassword
 {
-    internal class UpdatePasswordCommandHandler(IIdentityService identityService) : ICommandHandler<UpdatePasswordCommand>
+    internal class UpdatePasswordCommandHandler : ICommandHandler<UpdatePasswordCommand>
     {
+        private readonly ILogger<UpdatePasswordCommandHandler> _logger;
+        private readonly IIdentityService _identityService;
+        public UpdatePasswordCommandHandler(ILogger<UpdatePasswordCommandHandler> logger, IIdentityService identityService)
+        {
+            _logger = logger;
+            _identityService = identityService;
+        }
+
         public async Task<Result> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var result = await identityService.ChangePassword(request.EmailAddress, request.CurrentPassword, request.NewPassword);
+                var result = await _identityService.ChangePassword(request.EmailAddress, request.CurrentPassword, request.NewPassword);
 
                 if (!result.Succeeded)
                 {
                     return Result.Failure(string.Join(", ", result.Errors));
                 }
 
+                _logger.LogInformation("Password changed successfully for user {Email}", request.EmailAddress);
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                return Result.Failure(ex.Message);
+                _logger.LogCritical(ex, "An error occurred while changing password for user {Email}", request.EmailAddress);
+                return Result.Failure("An error occurred while changing the password.", ApiResponseCode.InternalServerError);
             }
         }
     }

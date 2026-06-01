@@ -1,34 +1,39 @@
-﻿using MultiTenantEMS.Application.Abstractions.Messaging;
+﻿using Microsoft.Extensions.Logging;
+using MultiTenantEMS.Application.Abstractions.Messaging;
 using MultiTenantEMS.Application.Abstractions.Persistence;
-using MultiTenantEMS.Application.Abstractions.Services;
 using MultiTenantEMS.Application.Common;
 
 namespace MultiTenantEMS.Application.Features.Employees.GetEmployeeById
 {
     internal class GetEmployeeByIdQueryHandler : IQueryHandler<GetEmployeeByIdQuery, GetEmployeeByIdResponseDto>
     {
-        private readonly ICurrentUserService _currentUserService;
         private readonly IEmployeeRepository _employeeRepository;
-        public GetEmployeeByIdQueryHandler(ICurrentUserService currentUserService, IEmployeeRepository employeeRepository)
+        private readonly ILogger<GetEmployeeByIdQueryHandler> _logger;
+        public GetEmployeeByIdQueryHandler(IEmployeeRepository employeeRepository, ILogger<GetEmployeeByIdQueryHandler> logger)
         {
-            _currentUserService = currentUserService;
             _employeeRepository = employeeRepository;
+            _logger = logger;
         }
 
         public async Task<Result<GetEmployeeByIdResponseDto>> Handle(GetEmployeeByIdQuery request, CancellationToken cancellationToken)
         {
-            var tenant = await _currentUserService.GetCurrentTenant();
-
-            var employee = await _employeeRepository.GetEmployeeById(tenant.ConnectionString, request.Id);
-            var response = new GetEmployeeByIdResponseDto()
+            try
             {
-                Id = employee.Id,
-                FullName = employee.FullName,
-                EmailAddress = employee.EmailAddress
-            };
+                var employee = await _employeeRepository.GetEmployeeById(request.Id);
+                var response = new GetEmployeeByIdResponseDto()
+                {
+                    Id = employee.Id,
+                    FullName = employee.FullName,
+                    EmailAddress = employee.EmailAddress
+                };
 
-            return Result<GetEmployeeByIdResponseDto>.Success(response);
+                return Result<GetEmployeeByIdResponseDto>.Success(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "An error occurred while processing GetEmployeeByIdQuery for Id: {Id}", request.Id);
+                return Result<GetEmployeeByIdResponseDto>.Failure("An unexpected error occurred while retrieving the employee details. Please try again later.", ApiResponseCode.InternalServerError);
+            }
         }
     }
 }
-                    

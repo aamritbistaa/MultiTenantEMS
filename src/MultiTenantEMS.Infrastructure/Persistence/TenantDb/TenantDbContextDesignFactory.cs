@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using MultiTenantEMS.Infrastructure.Persistence.MasterDb;
 
 namespace MultiTenantEMS.Infrastructure.Persistence.TenantDb
 {

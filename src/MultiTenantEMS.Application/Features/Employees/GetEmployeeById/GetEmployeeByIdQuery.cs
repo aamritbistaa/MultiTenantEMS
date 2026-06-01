@@ -1,5 +1,4 @@
 ﻿using MultiTenantEMS.Application.Abstractions.Messaging;
-using MultiTenantEMS.Application.Features.Employees.GetEmployees;
 
 namespace MultiTenantEMS.Application.Features.Employees.GetEmployeeById
 {

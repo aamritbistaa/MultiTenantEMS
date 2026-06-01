@@ -16,7 +16,7 @@ namespace MultiTenantEMS.Application.Common
 
         public static Result Success() => new(true, ApiResponseCode.Success, string.Empty);
 
-        public static Result Failure(string error) => new(false, ApiResponseCode.BadRequest, error);
+        public static Result Failure(string error, ApiResponseCode code = ApiResponseCode.BadRequest) => new(false, ApiResponseCode.BadRequest, error);
     }
 
     public class Result<T>

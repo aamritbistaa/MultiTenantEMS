@@ -14,16 +14,18 @@ namespace MultiTenantEMS.API.Controllers
     {
         private readonly ISender _sender;
         private readonly ICurrentUserService _currentUserService;
-        public AuthController(ISender sender, ICurrentUserService currentUserService)
+        private readonly ILogger<AuthController> _logger;
+        public AuthController(ISender sender, ICurrentUserService currentUserService, ILogger<AuthController> logger)
         {
             _sender = sender;
             _currentUserService = currentUserService;
+            _logger = logger;
         }
 
         [HttpPost("login")]
-        //[AllowAnonymous]
         public async Task<Result<LoginResponse>> Login(LoginCommand command)
         {
+            _logger.LogInformation("Login attempt for email: {EmailAddress}", command.EmailAddress);
             var result = await _sender.Send(command);
             return result;
         }
@@ -32,7 +34,9 @@ namespace MultiTenantEMS.API.Controllers
         [HttpPut("password")]
         public async Task<Result> UpdatePassword(UpdatePasswordCommand command)
         {
-            command.UserId = _currentUserService.GetCurrentUserId();
+            var userId = _currentUserService.GetCurrentUserId();
+            _logger.LogInformation("Password update attempt for user ID: {UserId}", userId);
+            command.UserId = userId;
             var result = await _sender.Send(command);
             return result;
         }

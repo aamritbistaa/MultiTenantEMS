@@ -1,9 +1,4 @@
 ﻿using MultiTenantEMS.Application.Features.Tenants.GetTenantById;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MultiTenantEMS.Application.Features.Tenants.GetTenants
 {

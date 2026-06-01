@@ -3,13 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MultiTenantEMS.API.Middleware
 {
-    /// <summary>
-    /// Handles an unhandled exception and writes a standardized error response.
-    /// </summary>
-    /// <param name="httpContext">The HTTP context for the current request.</param>
-    /// <param name="exception">The exception to handle.</param>
-    /// <param name="cancellationToken">Token to cancel the operation.</param>
-    /// <returns>True if the exception was handled.</returns>
     public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IProblemDetailsService problemDetailsService)
         : IExceptionHandler
     {
