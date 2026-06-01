@@ -17,11 +17,11 @@ namespace MultiTenantEMS.Infrastructure.Persistence.MasterDb
         {
             modelBuilder.ApplyConfiguration(new TenantConfiguration());
 
-            modelBuilder.Entity<ApplicationUser>(entity =>
-            {
-                entity.Property(x => x.TenantId)
-                .HasMaxLength(4);
-            });
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOne<Tenant>()
+                .WithMany()
+                .HasForeignKey(u => u.TenantId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

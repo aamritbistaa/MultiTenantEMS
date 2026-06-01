@@ -36,7 +36,7 @@ namespace MultiTenantEMS.Application.Features.Employees.CreateEmployee
             var employeeId = await _employeeRepository.AddEmployee(employee);
             try
             {
-                var identityResult = await _identityService.CreateUserAsync(employee.EmailAddress, request.Password, Roles.Employee, tenant.TenantId);
+                var identityResult = await _identityService.CreateUserAsync(employee.EmailAddress, request.Password, Roles.Employee, tenant.Id);
                 await _unitOfWork.SaveChangesAsync();
                 if (!identityResult.Succeeded)
                 {

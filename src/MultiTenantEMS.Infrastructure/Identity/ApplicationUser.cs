@@ -6,7 +6,7 @@ namespace MultiTenantEMS.Infrastructure.Identity
     public class ApplicationUser : IdentityUser
     {
         // null = SuperAdmin
-        public string? TenantId { get; set; }
+        public Guid? TenantId { get; set; }
         public string Role { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace MultiTenantEMS.Infrastructure.Identity
             _userManager = userManager;
         }
 
-        public async Task<(bool Succeeded, IEnumerable<string> Errors)> CreateUserAsync( string email, string password, string role, string? tenantId)
+        public async Task<(bool Succeeded, IEnumerable<string> Errors)> CreateUserAsync( string email, string password, string role, Guid? tenantId)
         {
             var user = new ApplicationUser
             {

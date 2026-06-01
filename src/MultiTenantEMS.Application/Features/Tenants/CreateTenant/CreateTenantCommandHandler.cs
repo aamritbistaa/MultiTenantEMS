@@ -60,7 +60,7 @@ namespace MultiTenantEMS.Application.Features.Tenants.CreateTenant
 
                 // Create Admin User
                 var password = request.Password;
-                var result = await _identityService.CreateUserAsync(request.EmailAddress, password, Roles.Admin, request.TenantId);
+                var result = await _identityService.CreateUserAsync(request.EmailAddress, password, Roles.Admin, tenantId);
 
                 if (!result.Succeeded)
                 {

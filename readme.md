@@ -64,7 +64,7 @@ Each tenant has its own database, and access is controlled using roles.
 Create migration for master DB:
 
 ```bash
-dotnet ef migrations add MasterInit --context MasterDbContext --project src/MultiTenantEMS.Infrastructure --startup-project src/MultiTenantEMS.API
+dotnet ef migrations add UpdateUserTenantRelationship --context MasterDbContext --project src/MultiTenantEMS.Infrastructure --startup-project src/MultiTenantEMS.API --output-dir Persistence/MasterDb/Migrations
 ```
 * It has been configured to support auto migrate on startup for MasterDbContext
 

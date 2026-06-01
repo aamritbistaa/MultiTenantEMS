@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MultiTenantEMS.Infrastructure.Migrations
+namespace MultiTenantEMS.Infrastructure.Persistence.MasterDb.Migrations
 {
     [DbContext(typeof(MasterDbContext))]
     partial class MasterDbContextModelSnapshot : ModelSnapshot
@@ -237,9 +237,8 @@ namespace MultiTenantEMS.Infrastructure.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<string>("TenantId")
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)");
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
@@ -256,6 +255,8 @@ namespace MultiTenantEMS.Infrastructure.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -309,6 +310,14 @@ namespace MultiTenantEMS.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MultiTenantEMS.Infrastructure.Identity.ApplicationUser", b =>
+                {
+                    b.HasOne("MultiTenantEMS.Domain.Entity.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

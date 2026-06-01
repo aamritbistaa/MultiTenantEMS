@@ -20,9 +20,8 @@ namespace MultiTenantEMS.Infrastructure.Identity
             _audience = _configuration["Jwt:Audience"];
             _secret = _configuration["Jwt:Secret"];
         }
-        public string GenerateToken(string userId, string email, string role, string? tenantId)
+        public string GenerateToken(string userId, string email, string role, Guid? tenantId)
         {
-
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, userId),
@@ -30,9 +29,9 @@ namespace MultiTenantEMS.Infrastructure.Identity
                 new(ClaimTypes.Role, role),
             };
 
-            if (!string.IsNullOrWhiteSpace(tenantId))
+            if (tenantId.HasValue)
             {
-                claims.Add(new Claim("tenantId", tenantId));
+                claims.Add(new Claim("tenantId", tenantId.Value.ToString()));
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));

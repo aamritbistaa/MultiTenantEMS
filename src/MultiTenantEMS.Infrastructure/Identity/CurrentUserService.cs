@@ -19,9 +19,10 @@ namespace MultiTenantEMS.Infrastructure.Identity
             }
             var tenant = await masterDbContext.Tenants
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.TenantId == tenantId);
+                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(tenantId));
             return new CurrentUser()
             {
+                Id = tenant?.Id ?? Guid.Empty,
                 TenantId = tenant?.TenantId,
                 ConnectionString = tenant?.DbConnStr
             };
@@ -44,7 +45,9 @@ namespace MultiTenantEMS.Infrastructure.Identity
             {
                 throw new Exception("Tenant ID claim is missing in the current user context.");
             }
-            var tenant = await masterDbContext.Tenants.AsNoTracking().FirstOrDefaultAsync(x => x.TenantId == tenantId);
+            var tenant = await masterDbContext.Tenants
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(tenantId));
             return tenant?.DbConnStr ?? string.Empty;
         }
     }
