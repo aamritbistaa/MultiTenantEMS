@@ -1,0 +1,36 @@
+services:
+  multitenantems.api:
+    image: ${DOCKER_REGISTRY-}multitenantemsapi
+    build:
+      context: .
+      dockerfile: ../src/MultiTenantEMS.API/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+  
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_DATABASENAME}
+      TZ: Asia/Kathmandu
+      PGTZ: Asia/Kathmandu
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DATABASE_USER} -d ${DATABASE_DATABASENAME}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres-data:

@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="src/MultiTenantEMS.Application/MultiTenantEMS.Application.csproj" />
+  <Project Path="src/MultiTenantEMS.Domain/MultiTenantEMS.Domain.csproj" />
+  <Project Path="src/MultiTenantEMS.Infrastructure/MultiTenantEMS.Infrastructure.csproj" />
+  <Project Path="docker/docker-compose.dcproj">
+    <Build />
+  </Project>
+  <Project Path="src/MultiTenantEMS.API/MultiTenantEMS.API.csproj" />
+</Solution>
