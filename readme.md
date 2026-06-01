@@ -89,9 +89,15 @@ dotnet ef migrations add EmployeeInit --context TenantDbContext --project src/Mu
 To access swagger
 http://localhost:5000/swagger/index.html
 
----
-
 ## APIs
+
+### Health Check
+
+| Method | Endpoint | Auth | Description |
+|----------|----------|------|-------------|
+| GET | /health | Anonymous | Application and database health status |
+
+---
 
 ## Auth API (/api/v1/auth)
 
