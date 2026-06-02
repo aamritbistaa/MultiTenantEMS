@@ -35,7 +35,6 @@ namespace MultiTenantEMS.Application.Features.Tenants.UpdateTenant
                 }
 
                 tenant.Name = request.Name;
-                tenant.EmailAddress = request.EmailAddress;
                 tenant.TenantId = request.TenantId;
                 await _tenantRepository.UpdateTenantAsync(tenant);
                 await _unitOfWork.SaveChangesAsync();

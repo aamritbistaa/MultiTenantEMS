@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MultiTenantEMS.Infrastructure.Persistence.MasterDb.Migrations
 {
     [DbContext(typeof(MasterDbContext))]
-    [Migration("20260601201058_UpdateUserTenantRelationship")]
-    partial class UpdateUserTenantRelationship
+    [Migration("20260602062754_MasterInit")]
+    partial class MasterInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

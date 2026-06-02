@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MultiTenantEMS.Application.Abstractions.Services;
+using MultiTenantEMS.Application.Common;
 using Npgsql;
 
 namespace MultiTenantEMS.Infrastructure.Persistence.TenantDb
@@ -8,9 +9,9 @@ namespace MultiTenantEMS.Infrastructure.Persistence.TenantDb
     {
         private readonly string _masterConnection;
 
-        public TenantDatabaseManager(IConfiguration configuration)
+        public TenantDatabaseManager()
         {
-            _masterConnection = configuration.GetConnectionString("MasterDb");
+            _masterConnection = Helper.DatabaseConnectionString;
         }
 
         public async Task<bool> DatabaseExistsAsync(string tenantId)

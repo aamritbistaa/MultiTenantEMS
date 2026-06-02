@@ -41,10 +41,17 @@ namespace MultiTenantEMS.API.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPut("password")]
-        public async Task<Result> UpdatePassword(UpdatePasswordCommand command)
+        public async Task<Result> UpdatePassword(UpdatePasswordCommmandRequestDto request)
         {
             var userId = _currentUserService.GetCurrentUserId();
             _logger.LogInformation("Password update attempt for user ID: {UserId}", userId);
+            var command = new UpdatePasswordCommand
+            {
+                UserId = userId,
+                CurrentPassword = request.CurrentPassword,
+                EmailAddress = request.EmailAddress,
+                NewPassword = request.NewPassword,
+            };
             command.UserId = userId;
             var result = await _sender.Send(command);
             return result;

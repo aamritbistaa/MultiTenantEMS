@@ -1,22 +1,26 @@
-# Project Overview - MultiTenant EMS
+# Multi-Tenant Employee Management System
 
-This is a multi-tenant Employee Management System built using ASP.NET Core 8, PostgreSQL, Clean Architecture, CQRS, and JWT authentication.
+A multi-tenant Employee Management System built with **ASP.NET Core 8**, **PostgreSQL**, **Clean Architecture**, **CQRS**, and **Microsoft Identity**. Each tenant has its own isolated PostgreSQL database for complete data isolation.
 
-Each tenant has its own database, and access is controlled using roles.
+## Table Of Content
+* #### [Architecture Overview](docs/Architectural%20Overview.md)
+* #### [Setup Instructions](docs/Setup%20Instructions.md)
+* #### [Database Migration Guide](#database-migration)
+* #### [Tenant Database Creation Flow](docs/Tenant%20Database%20Creation%20Flow.md)
+* #### [API Examples](docs/Api%20Examples.md)
+* #### [Seeded Super Admin Credentials](#super-admin-credential)
+
 
 ---
+### Functionality
 
-## Roles
- - Super Admin
- - Admin
- - Employee
-
-## Functionality
- - Super admin can Create/Update/Delete/View Tenant (Admins)
- - Tenant can login to the system and Create/Update/Delete/View Employee in the responding tenant db
- - Employee can view their information 
+| User Role | Capabilities |
+|-----------|-------------|
+| **SuperAdmin** | Create/Update/Delete tenants, manage all tenants |
+| **Admin** | Create/Update/Delete employees, manage employees, change password |
+| **Employee** | View own profile, change password, cannot access other employees |
  
-## What it does
+### What it does
 
 * Super admin can manage tenants
 * Each tenant gets its own isolated database
@@ -24,110 +28,51 @@ Each tenant has its own database, and access is controlled using roles.
 * Employees can only view their own profile
 * Authentication is handled using JWT + ASP.NET Identity
 
-## Assumptions
+### Assumptions
 - Delete referring to soft delete
-- String as Primary key refers to text for psql, which will be same for Guid also, so i assumed Id to be guid
+- String as Primary key refers to text for psql, which when used Guid as pk would also reflect as text, so i assumed Id to be guid
 - Exception messages are displayed only in logs, the request's show the generic messages in case of exception
 - The deleted tenant cannot be readded with same email and tenant id
 
-## Tech stack
+### Known issues
 
-* ASP.NET Core 8
-* PostgreSQL
-* Entity Framework Core
-* ASP.NET Identity
-* JWT
-* Clean Architecture
-* CQRS
-
-## Known issues
-
-* Soft deleted tenants can still log in
+* Deleted users can still log in
 * Identity records are not cleaned up when tenant/user is deleted
 * JWT token expiry is set to 2 hours
 
+
+## Database Migration
+
+Currently, migrations are applied automatically on startup for the master and identity databases. If we want to run migrations manually, we need to update the master database connection string in appsettings.json. Additionally, changes are required in DependencyInjection and TenantDatabaseManager within the Infrastructure project.
+
+### 📌 Create Migration for Master Database
+
+```bash
+dotnet ef migrations add MasterInit \
+  --context MasterDbContext \
+  --project src/MultiTenantEMS.Infrastructure \
+  --startup-project src/MultiTenantEMS.API \
+  --output-dir Persistence/MasterDb/Migrations
+```
+
+
+### 📌 Create Migration for Tenant Database
+
+```bash
+dotnet ef migrations add EmployeeInit \
+  --context TenantDbContext \
+  --project src/MultiTenantEMS.Infrastructure \
+  --startup-project src/MultiTenantEMS.API \
+  --output-dir Persistence/TenantDb/Migrations
+```
+
 ---
 
-## Default Super Admin
-
-```json
+## Super Admin Credential
 {
   "emailAddress": "assessment@yopmail.com",
   "password": "Tester@123"
 }
-```
 
 ---
 
-## Database setup (EF Core)
-
-Create migration for master DB:
-
-```bash
-dotnet ef migrations add UpdateUserTenantRelationship --context MasterDbContext --project src/MultiTenantEMS.Infrastructure --startup-project src/MultiTenantEMS.API --output-dir Persistence/MasterDb/Migrations
-```
-* It has been configured to support auto migrate on startup for MasterDbContext
-
-Update database:
-
-```bash
-dotnet ef database update --context MasterDbContext --project src/MultiTenantEMS.Infrastructure --startup-project src/MultiTenantEMS.API
-```
-
-Create tenant DB migration:
-
-```bash
-dotnet ef migrations add EmployeeInit --context TenantDbContext --project src/MultiTenantEMS.Infrastructure --startup-project src/MultiTenantEMS.API --output-dir Persistence/TenantDb/Migrations
-```
-
----
-
-## Starting the Project
-`cd docker`
-`docker compose up`
-
-To access swagger
-http://localhost:5000/swagger/index.html
-
-## APIs
-
-### Health Check
-
-| Method | Endpoint | Auth | Description |
-|----------|----------|------|-------------|
-| GET | /health | Anonymous | Application and database health status |
-
----
-
-## Auth API (/api/v1/auth)
-
-| Method | Endpoint | Auth | Description | Body |
-|--------|----------|------|-------------|------|
-| POST | /auth/login | Anonymous | Login user | { emailAddress, password } |
-| PUT | /auth/password | Authenticated | Change password | { emailAddress, currentPassword, newPassword } |
-
----
-
-## Tenant API (/api/v1/tenant)
-
-| Method | Endpoint | Auth | Description | Params / Body |
-|--------|----------|------|-------------|---------------|
-| GET | /tenant | SuperAdmin | Get all tenants | skip, take |
-| GET | /tenant/{id} | SuperAdmin | Get tenant by id | id (GUID) |
-| POST | /tenant | SuperAdmin | Create tenant | { name, emailAddress, tenantId, password } |
-| PUT | /tenant/{id} | SuperAdmin | Update tenant | { name, emailAddress, tenantId } |
-| DELETE | /tenant/{tenantId} | SuperAdmin | Delete tenant | tenantId (string) |
-
----
-
-## Employee API (/api/v1/employee)
-
-| Method | Endpoint | Auth | Description | Params / Body |
-|--------|----------|------|-------------|---------------|
-| GET | /employee | Admin | Get all employees | skip, take |
-| GET | /employee/{id} | AdminOrEmployee | Get employee by id | id (GUID) |
-| POST | /employee | Admin | Create employee | { fullName, emailAddress, password } |
-| PUT | /employee/{id} | Admin | Update employee name | fullName (text/plain) |
-| DELETE | /employee/{id} | Admin | Delete employee | - |
-
----

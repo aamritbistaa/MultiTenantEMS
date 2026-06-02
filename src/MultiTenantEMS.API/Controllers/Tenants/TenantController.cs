@@ -69,13 +69,12 @@ namespace MultiTenantEMS.API.Controllers.Tenants
         /// <returns></returns>
         [HttpPut("{id:Guid}")]
         [Authorize(Policy = "SuperAdmin")]
-        public async Task<Result> UpdateTenant([FromRoute]Guid id, [FromBody] UpdateTenantCommandRequestDto request)
+        public async Task<Result> UpdateTenant([FromRoute] Guid id, [FromBody] UpdateTenantCommandRequestDto request)
         {
             _logger.LogInformation("Update tenant initiated id: {Id}", id);
             var command = new UpdateTenantCommand()
             {
                 Id = id,
-                EmailAddress = request.EmailAddress,
                 Name = request.Name,
                 TenantId = request.TenantId
             };

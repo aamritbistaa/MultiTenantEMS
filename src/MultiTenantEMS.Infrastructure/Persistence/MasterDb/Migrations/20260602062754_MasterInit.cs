@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MultiTenantEMS.Infrastructure.Persistence.MasterDb.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateUserTenantRelationship : Migration
+    public partial class MasterInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MultiTenantEMS.Application.Abstractions.Authentication;
 using MultiTenantEMS.Application.Abstractions.Persistence;
 using MultiTenantEMS.Application.Abstractions.Services;
+using MultiTenantEMS.Application.Common;
 using MultiTenantEMS.Infrastructure.Identity;
 using MultiTenantEMS.Infrastructure.Persistence.MasterDb;
 using MultiTenantEMS.Infrastructure.Persistence.MasterDb.Repositories;
@@ -16,7 +17,7 @@ namespace MultiTenantEMS.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("MasterDb");
+            var connectionString = Helper.DatabaseConnectionString;
             services.AddDbContext<MasterDbContext>(options =>
                 options.UseNpgsql(connectionString));
 
