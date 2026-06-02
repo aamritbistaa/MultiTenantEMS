@@ -30,6 +30,7 @@ namespace MultiTenantEMS.Application.Features.Tenants.CreateTenant
         {
             try
             {
+                request.EmailAddress = request.EmailAddress.ToLower();
                 bool isTenantExist = await _tenantRepository.IsTenantExistAsync(request.TenantId);
                 if (isTenantExist)
                 {
@@ -73,7 +74,7 @@ namespace MultiTenantEMS.Application.Features.Tenants.CreateTenant
             }
             catch (Exception ex)
             {
-                if(await _tenantDatabaseManager.DatabaseExistsAsync(request.TenantId))
+                if (await _tenantDatabaseManager.DatabaseExistsAsync(request.TenantId))
                 {
                     await _tenantDatabaseManager.DropDatabaseAsync(request.TenantId);
                 }

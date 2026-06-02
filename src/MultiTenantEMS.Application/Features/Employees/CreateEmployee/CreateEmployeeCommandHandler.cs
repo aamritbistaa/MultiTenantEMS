@@ -26,7 +26,7 @@ namespace MultiTenantEMS.Application.Features.Employees.CreateEmployee
         public async Task<Result<string>> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
         {
             var tenant = await _currentUserService.GetCurrentTenant();
-
+            request.EmailAddress = request.EmailAddress.ToLower();
             var employee = new Employee
             {
                 FullName = request.FullName,
