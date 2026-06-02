@@ -4,5 +4,6 @@ obj/
 .vs/
 .vscode/
 
+.env
 
 appsettings.Development.json
