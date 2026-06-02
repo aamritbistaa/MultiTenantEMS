@@ -86,11 +86,9 @@ Stores global system data:
 * ASP.NET Identity Users (Emai, Role, TenantId(Fk->Tenant.Id))
 * Roles
 
----
-
 ### Tenant Database
 
-Each tenant has its own DB:
+Tenant specific Database containing:
 * Employee (Id, FullName, EmailAddress)
 
 ---
